@@ -1,137 +1,109 @@
-# my-website2
-elearning１１９
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>消防・救急 教育ポータル | Naoki Works</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
-      background: radial-gradient(circle at center, #0a0a0a 0%, #000000 100%);
-      color: white;
-      text-align: center;
-      overflow-x: hidden;
-    }
+<div align="center" style="background-color:#000; color:#d4af37; font-family:'Hiragino Sans','Yu Gothic',sans-serif; padding:40px 20px; border-radius:12px;">
 
-    header {
-      padding: 2.5rem 1rem 1rem;
-    }
+  <h1 style="color:#ff2e2e; letter-spacing:0.05em; margin-bottom:0.3em;">
+    🚒 消防 eラーニングポータル
+  </h1>
+  <p style="font-size:1.1em; color:#d4af37; margin-bottom:1em;">
+    安全・確実・迅速な現場活動を支える、実践型オンライン教材。
+  </p>
+  <hr style="border: 0; height: 1px; background: linear-gradient(to right, #ff2e2e, #d4af37, #ff2e2e); width:80%; margin: 30px auto;">
 
-    h1 {
-      font-size: 2rem;
-      letter-spacing: 0.1em;
-      background: linear-gradient(90deg, #ffd700, #ff4500);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 25px rgba(255, 180, 0, 0.6);
-    }
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px; max-width:900px; margin:auto;">
 
-    p.subtitle {
-      font-size: 1.1rem;
-      color: #ccc;
-      margin-top: 0.5rem;
-      text-shadow: 0 0 6px rgba(255,255,255,0.2);
-    }
+    <!-- Lesson 1〜15 -->
+    <div style="background-color:#111; border:1px solid #d4af37; border-radius:10px; padding:20px;">
+      <h3 style="color:#ff2e2e;">Lesson 1</h3>
+      <p>火災現場の安全管理</p>
+      <a href="lesson1/index.html" style="color:#000; background-color:#d4af37; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold;">▶ 学習する</a>
+    </div>
 
-    .grid {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 2rem;
-      padding: 3rem 1rem;
-    }
+    <div style="background-color:#111; border:1px solid #d4af37; border-radius:10px; padding:20px;">
+      <h3 style="color:#ff2e2e;">Lesson 2</h3>
+      <p>救助活動の基本</p>
+      <a href="lesson2/index.html" style="color:#000; background-color:#d4af37; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold;">▶ 学習する</a>
+    </div>
 
-    .card {
-      width: 280px;
-      height: 220px;
-      border-radius: 18px;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      transition: all 0.4s ease;
-      cursor: pointer;
-      box-shadow: 0 0 20px rgba(255,255,255,0.15);
-      text-decoration: none;
-    }
+    <div style="background-color:#111; border:1px solid #d4af37; border-radius:10px; padding:20px;">
+      <h3 style="color:#ff2e2e;">Lesson 3</h3>
+      <p>通信管理・無線運用</p>
+      <a href="lesson3/index.html" style="color:#000; background-color:#d4af37; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold;">▶ 学習する</a>
+    </div>
 
-    /* 消防版カード */
-    .fire {
-      background: linear-gradient(135deg, #111, #330000, #111);
-      border: 2px solid #ff3b3b;
-      box-shadow: 0 0 30px rgba(255, 90, 0, 0.3);
-    }
+    <div style="background-color:#111; border:1px solid #d4af37; border-radius:10px; padding:20px;">
+      <h3 style="color:#ff2e2e;">Lesson 4</h3>
+      <p>車両運用と安全走行</p>
+      <a href="lesson4/index.html" style="color:#000; background-color:#d4af37; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold;">▶ 学習する</a>
+    </div>
 
-    .fire:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 40px rgba(255, 140, 0, 0.8), 0 0 80px rgba(255, 90, 0, 0.6);
-    }
+    <div style="background-color:#111; border:1px solid #d4af37; border-radius:10px; padding:20px;">
+      <h3 style="color:#ff2e2e;">Lesson 5</h3>
+      <p>機械器具の取扱い</p>
+      <a href="lesson5/index.html" style="color:#000; background-color:#d4af37; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold;">▶ 学習する</a>
+    </div>
 
-    .fire h2 {
-      color: #ffd700;
-      text-shadow: 0 0 10px rgba(255, 200, 50, 0.7);
-      margin-bottom: 0.5rem;
-    }
+    <div style="background-color:#111; border:1px solid #d4af37; border-radius:10px; padding:20px;">
+      <h3 style="color:#ff2e2e;">Lesson 6</h3>
+      <p>火災調査と関係法令</p>
+      <a href="lesson6/index.html" style="color:#000; background-color:#d4af37; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold;">▶ 学習する</a>
+    </div>
 
-    .fire p {
-      color: #ffcccc;
-      font-size: 0.95rem;
-    }
+    <div style="background-color:#111; border:1px solid #d4af37; border-radius:10px; padding:20px;">
+      <h3 style="color:#ff2e2e;">Lesson 7</h3>
+      <p>伐木作業（チェーンソー）特別教育</p>
+      <a href="lesson7/index.html" style="color:#000; background-color:#d4af37; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold;">▶ 学習する</a>
+    </div>
 
-    /* 救急版カード */
-    .ems {
-      background: linear-gradient(135deg, #002b5c, #003b7a, #001f3f);
-      border: 2px solid #0074d9;
-      box-shadow: 0 0 30px rgba(0, 114, 255, 0.3);
-    }
+    <div style="background-color:#111; border:1px solid #d4af37; border-radius:10px; padding:20px;">
+      <h3 style="color:#ff2e2e;">Lesson 8</h3>
+      <p>感染防止対策</p>
+      <a href="lesson8/index.html" style="color:#000; background-color:#d4af37; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold;">▶ 学習する</a>
+    </div>
 
-    .ems:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 40px rgba(215, 26, 40, 0.8), 0 0 70px rgba(0, 120, 255, 0.6);
-    }
+    <div style="background-color:#111; border:1px solid #d4af37; border-radius:10px; padding:20px;">
+      <h3 style="color:#ff2e2e;">Lesson 9</h3>
+      <p>危険物火災対応</p>
+      <a href="lesson9/index.html" style="color:#000; background-color:#d4af37; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold;">▶ 学習する</a>
+    </div>
 
-    .ems h2 {
-      color: #ffffff;
-      text-shadow: 0 0 10px rgba(255,255,255,0.8);
-      margin-bottom: 0.5rem;
-    }
+    <div style="background-color:#111; border:1px solid #d4af37; border-radius:10px; padding:20px;">
+      <h3 style="color:#ff2e2e;">Lesson 10</h3>
+      <p>水難救助</p>
+      <a href="lesson10/index.html" style="color:#000; background-color:#d4af37; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold;">▶ 学習する</a>
+    </div>
 
-    .ems p {
-      color: #dce9ff;
-      font-size: 0.95rem;
-    }
+    <div style="background-color:#111; border:1px solid #d4af37; border-radius:10px; padding:20px;">
+      <h3 style="color:#ff2e2e;">Lesson 11</h3>
+      <p>心理対応・住民支援</p>
+      <a href="lesson11/index.html" style="color:#000; background-color:#d4af37; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold;">▶ 学習する</a>
+    </div>
 
-    footer {
-      margin-top: 2rem;
-      font-size: 0.85rem;
-      color: #777;
-      padding-bottom: 2rem;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>消防・救急 教育ポータル</h1>
-    <p class="subtitle">現場で生きる学びを、次の世代へ。</p>
-  </header>
+    <div style="background-color:#111; border:1px solid #d4af37; border-radius:10px; padding:20px;">
+      <h3 style="color:#ff2e2e;">Lesson 12</h3>
+      <p>無線通信障害対応</p>
+      <a href="lesson12/index.html" style="color:#000; background-color:#d4af37; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold;">▶ 学習する</a>
+    </div>
 
-  <div class="grid">
-    <a href="https://＜消防eラーニング用リポジトリ名＞.github.io/" class="card fire" target="_blank">
-      <h2>🚒 消防教育サイト</h2>
-      <p>黒×金×赤の高級感で統一された、現場安全・災害対応学習コンテンツ</p>
-    </a>
+    <div style="background-color:#111; border:1px solid #d4af37; border-radius:10px; padding:20px;">
+      <h3 style="color:#ff2e2e;">Lesson 13</h3>
+      <p>訓練指導法</p>
+      <a href="lesson13/index.html" style="color:#000; background-color:#d4af37; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold;">▶ 学習する</a>
+    </div>
 
-    <a href="https://＜救急eラーニング用リポジトリ名＞.github.io/" class="card ems" target="_blank">
-      <h2>🚑 救急教育サイト</h2>
-      <p>トリコロールを基調にした、信頼・技術・命の学びポータル</p>
-    </a>
+    <div style="background-color:#111; border:1px solid #d4af37; border-radius:10px; padding:20px;">
+      <h3 style="color:#ff2e2e;">Lesson 14</h3>
+      <p>機関員教育</p>
+      <a href="lesson14/index.html" style="color:#000; background-color:#d4af37; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold;">▶ 学習する</a>
+    </div>
+
+    <div style="background-color:#111; border:1px solid #d4af37; border-radius:10px; padding:20px;">
+      <h3 style="color:#ff2e2e;">Lesson 15</h3>
+      <p>リーダーシップ</p>
+      <a href="lesson15/index.html" style="color:#000; background-color:#d4af37; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold;">▶ 学習する</a>
+    </div>
+
   </div>
 
-  <footer>© 2025 消防・救急 教育ポータル / 作成：Naoki</footer>
-</body>
-</html>
+  <hr style="border:0; height:1px; background:linear-gradient(to right, #d4af37, #ff2e2e, #d4af37); width:70%; margin:40px auto;">
+  <p style="font-size:0.9em; color:#888;">© 2025 消防eラーニングサポート / 作成：Naoki</p>
+
+</div>
