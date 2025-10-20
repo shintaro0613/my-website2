@@ -1,1 +1,391 @@
+lesson2/index.html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>放射性物質事故対応 eラーニング模擬試験</title>
+    <!-- Google Font: Noto Sans Japanese -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- KaTeX CSS for elegant math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
 
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f7f9fc; /* Light, elegant background */
+        }
+        /* Custom scrollbar for aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e0e7ff; /* Light indigo */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4f46e5; /* Main indigo */
+            border-radius: 4px;
+        }
+        .quiz-container {
+            min-height: calc(100vh - 4rem); /* Ensure full height on mobile */
+        }
+    </style>
+    <script>
+        // Tailwind CSS Configuration
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#4f46e5', // Indigo
+                        'secondary': '#facc15', // Gold/Amber accent
+                        'background-light': '#f7f9fc',
+                        'card-light': '#ffffff',
+                        'success-light': '#10b981',
+                        'error-light': '#ef4444',
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="p-4 sm:p-6 md:p-8">
+
+    <div id="app" class="quiz-container max-w-4xl mx-auto shadow-2xl rounded-2xl bg-card-light overflow-hidden">
+        
+        <!-- Header -->
+        <header class="bg-primary p-6 sm:p-8 rounded-t-2xl shadow-lg">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white text-center tracking-wider">
+                放射性物質事故対応 eラーニング模擬試験
+            </h1>
+            <p class="text-sm sm:text-base text-indigo-200 text-center mt-2">
+                緊急対応のプロフェッショナルへ
+            </p>
+        </header>
+
+        <!-- Quiz Area -->
+        <div id="quiz-area" class="p-5 sm:p-8 transition-opacity duration-500">
+            <!-- Questions will be dynamically inserted here -->
+            <div id="questions-list"></div>
+
+            <!-- Controls (Submit/Retry) -->
+            <div id="controls" class="mt-10 flex flex-col space-y-4">
+                <button id="submit-button" onclick="scoreQuiz()" class="w-full py-3 px-6 bg-secondary text-gray-900 font-bold rounded-xl text-lg shadow-lg hover:bg-yellow-400 transition transform hover:scale-[1.01] focus:outline-none focus:ring-4 focus:ring-secondary/50 active:bg-yellow-600 disabled:opacity-50" disabled>
+                    採点する
+                </button>
+                <button id="retry-button" onclick="retryQuiz()" class="hidden w-full py-3 px-6 bg-primary text-white font-bold rounded-xl text-lg shadow-lg hover:bg-indigo-600 transition transform hover:scale-[1.01] focus:outline-none focus:ring-4 focus:ring-primary/50 active:bg-indigo-800">
+                    再挑戦する
+                </button>
+            </div>
+        </div>
+        
+        <!-- Results Area -->
+        <div id="results-area" class="p-5 sm:p-8 hidden bg-background-light border-t-4 border-primary/50">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">
+                <span id="score-text" class="px-4 py-2 rounded-full shadow-md"></span>
+            </h2>
+            <p id="feedback-message" class="text-center text-gray-600 mb-8 text-lg"></p>
+
+            <div id="explanations-list" class="space-y-8">
+                <!-- Explanations will be inserted here -->
+            </div>
+            
+            <button id="retry-button-results" onclick="retryQuiz()" class="w-full mt-10 py-3 px-6 bg-primary text-white font-bold rounded-xl text-lg shadow-lg hover:bg-indigo-600 transition transform hover:scale-[1.01] focus:outline-none focus:ring-4 focus:ring-primary/50 active:bg-indigo-800">
+                再挑戦する
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. DATA: 50 Questions Pool ---
+        // 修正点: 質問3の形式を単一選択に修正し、正解文字列が必ずオプション内の文字列と一致するようにしました。
+        const quizData = [
+            // I. 放射線の基礎知識と人体への影響
+            { q: "放射線の種類のうち、透過力が最も弱いものはどれですか。", a: "3. アルファ（$\\alpha$）線", options: ["1. ベータ（$\\beta$）線", "2. ガンマ（$\\gamma$）線", "3. アルファ（$\\alpha$）線", "4. 中性子線"], explanation: "アルファ（$\\alpha$）線は、透過力が極めて小さい性質があり、紙一枚で止めることができます。" },
+            { q: "透過力が強いガンマ線や中性子線に対して、体の外部からの被ばく（外部被ばく）を防護するための「防護の三原則」に含まれないものはどれですか。", a: "4. 除染（体表面の放射性物質を除去する）", options: ["1. 時間（活動時間を短くする）", "2. 距離（線源から距離をとる）", "3. 遮へい（遮へい材を活用する）", "4. 除染（体表面の放射性物質を除去する）"], explanation: "外部被ばくを防護するための三原則は、「時間」、「距離」、「遮へい」です。除染は、放射性物質による汚染を防ぐための措置です。" },
+            // Q3修正: 複数回答の質問を単一選択（組み合わせ）に変更
+            { q: "透過力が弱いため、放射性物質を体内に取り込んだ場合の被ばく（内部被ばく）が特に問題となる放射線は、次のうちどれとどれの組み合わせですか。", a: "2. アルファ（$\\alpha$）線とベータ（$\\beta$）線", options: ["1. ガンマ（$\\gamma$）線とエックス（X）線", "2. アルファ（$\\alpha$）線とベータ（$\\beta$）線", "3. エックス（X）線と中性子線", "4. ガンマ（$\\gamma$）線とベータ（$\\beta$）線"], explanation: "透過力が弱いアルファ（$\\alpha$）線とベータ（$\\beta$）線は、体内に取り込まれた場合の内部被ばくによる影響を特に考慮する必要があります。" },
+            { q: "放射性物質が体内に取り込まれる経路として、主なものは次のうちどれですか。（該当しないものを1つ選びなさい）", a: "3. 皮膚（健常な部位）", options: ["1. 鼻", "2. 口", "3. 皮膚（健常な部位）", "4. 傷口"], explanation: "体内への取り込み経路は、鼻、口、傷口などです。健常な皮膚表面への付着は「体表面汚染」と呼ばれ、内部被ばくとは区別されます。" },
+            { q: "一度に大量の高線量被ばく（1Gy以上）を受けた場合、短時間（前駆期：～48時間）で最初に現れる可能性が高い症状は何ですか。", a: "3. 悪心、嘔吐", options: ["1. 脱毛", "2. 白内障", "3. 悪心、嘔吐", "4. 永久不妊"], explanation: "全身に1グレイ（Gy）以上の放射線を一度に受けた場合に見られる急性放射線症候群の「前駆期」において、悪心、嘔吐の症状は早期に現れる可能性が高いです。" },
+            { q: "放射性物質のうち、体内に取り込まれた場合、甲状腺に集積する性質があるのはどの核種ですか。", a: "3. 放射性ヨウ素（$^{131}\\text{I}$）", options: ["1. セシウム（$^{137}\\text{Cs}$）", "2. ストロンチウム（$^{90}\\text{Sr}$）", "3. 放射性ヨウ素（$^{131}\\text{I}$）", "4. プルトニウム（$^{239}\\text{Pu}$）"], explanation: "放射性ヨウ素（$^{131}\\text{I}$）は甲状腺に集積するため、安定ヨウ素剤の服用が対策として取られます。" },
+            { q: "放射線の影響のうち、「一定量の放射線を受けると、必ず現れる」影響を指す用語はどれですか。", a: "4. 確定的影響", options: ["1. 遺伝性影響", "2. 確率的影響", "3. 晩発障害", "4. 確定的影響"], explanation: "確定的影響は、しきい線量を超えて被ばくした場合に必ず現れる影響です。これに対し、がんのように確率が高まる影響は確率的影響と呼ばれます。" },
+            // II. 測定、単位、装備
+            { q: "放射性物質の放射能の強さ、すなわち「1秒間に壊変する原子核の数」を表すS.I.単位は何ですか。", a: "3. ベクレル（Bq）", options: ["1. グレイ（Gy）", "2. シーベルト（Sv）", "3. ベクレル（Bq）", "4. レム（rem）"], explanation: "ベクレル（Bq）は放射能（壊変率）の単位です。グレイ（Gy）は吸収線量、シーベルト（Sv）は実効線量の単位です。" },
+            { q: "放射性物質の事故対応において、消防活動上必要となる測定対象として、誤っているものはどれですか。", a: "4. 核種の同定", options: ["1. 空間線量率", "2. 個人被ばく線量", "3. 表面汚染", "4. 核種の同定"], explanation: "消防活動上必要な測定対象は「空間線量率」、「個人被ばく線量」、「表面汚染」の3つです。核種の同定は専門チームが行うより詳細な分析です。" },
+            { q: "消防隊員が活動中に被ばくした積算線量（Sv）を測定するために使用され、活動中の線量を管理するために必要な機器は何ですか。", a: "2. 個人警報線量計（電子式線量計）", options: ["1. フィルムバッジ", "2. 個人警報線量計（電子式線量計）", "3. 空間線量率計（サーベイメータ）", "4. 熱ルミネッセンス線量計（TLD）"], explanation: "活動中にリアルタイムで積算線量を監視し、警報を発することができるのは個人警報線量計です。" },
+            { q: "表面汚染検査計で測定される単位$\\text{cpm}$（1分間に放射線測定器が検出した放射線の数）から、表面汚染密度$\\text{Bq}/\\text{cm}^2$に換算するために必要な情報は次のうちどれですか。", a: "2. 測定器に応じた係数（放射線のエネルギーに依存）", options: ["1. 環境放射線量率", "2. 測定器に応じた係数（放射線のエネルギーに依存）", "3. 隊員の積算被ばく線量", "4. 放射性物質の半減期"], explanation: "検出効率や放射線の種類、エネルギーに応じた測定器ごとの係数（校正定数）を用いて$\\text{cpm}$を$\\text{Bq}/\\text{cm}^2$に換算します。" },
+            { q: "消防活動における「人命救助等の緊急時活動」を行う場合の1回あたりの被ばく線量の上限値（目安）として定められているのは何$\\text{mSv}$以下ですか。", a: "3. $100 \\text{mSv}$", options: ["1. $10 \\text{mSv}$", "2. $50 \\text{mSv}$", "3. $100 \\text{mSv}$", "4. $250 \\text{mSv}$"], explanation: "人命救助等の緊急時活動における実効線量限度は$100 \\text{mSv}$です。実際の運用では安全率を見て$30 \\text{mSv}$〜$50 \\text{mSv}$が警報設定値とされます。" },
+            { q: "放射線防護服（簡易防護服）に関する記述として、正しいものはどれですか。", a: "3. 主に放射性物質による体表面汚染を防護する目的で着用される。", options: ["1. 透過力の強いガンマ線や中性子線を有効に遮へいできる。", "2. 鉛ベストが付属している場合、セシウム-137やコバルト-60といった高エネルギーの放射線に対し、90%以上の遮へい効果を発揮する。", "3. 主に放射性物質による体表面汚染を防護する目的で着用される。", "4. 火災が発生している状況下でも、簡易防護服は防火衣の外側に必ず着用する必要がある。"], explanation: "簡易防護服は、放射性物質が体表面に付着する体表面汚染を防ぐために着用されます。透過力の強い放射線に対する遮へい効果はほとんどありません。" },
+            // III. 事故対応と活動原則
+            { q: "放射性物質の事故が発生し、現場に到着した後、放射線による事故であることが判明した場合に、直ちに行うべき初動対応は何ですか。", a: "2. 直ちに通信指令室に報告するとともに、応援部隊の派遣を要請する。", options: ["1. 直ちに被ばく線量の上限値（$100 \\text{mSv}$）を設定し、救助活動を開始する。", "2. 直ちに通信指令室に報告するとともに、応援部隊の派遣を要請する。", "3. 事業者側の放射線管理要員が到着するまで、現場指揮本部を設置せずに待機する。", "4. 直ちに隊員全員が簡易防護服と空気呼吸器を着用し、汚染区域に進入する。"], explanation: "放射線事故と判明した場合は、まず通信指令室に報告し、応援部隊の派遣を要請し、安全な場所で体制を整えることが最優先です。" },
+            { q: "放射性物質事故対応におけるゾーニング（区域設定）に関する説明として、正しいものはどれですか。", a: "2. 「進入統制ライン」は、空間線量率がバックグラウンドレベルと同程度であり、現場指揮者がそれ以上進入することが危険であると判断した位置に設定される。", options: ["1. 放射性物質が飛散し、危険度が最も高い区域は「準危険区域」と設定される。", "2. 「進入統制ライン」は、空間線量率がバックグラウンドレベルと同程度であり、現場指揮者がそれ以上進入することが危険であると判断した位置に設定される。", "3. 救助活動を最優先するため、「放射線危険区域」内では被ばく管理は行わなくてもよい。", "4. 汚染検査所や除染所は「放射線危険区域」内に設置する。"], explanation: "進入統制ラインは、放射線レベルがバックグラウンドと同程度で、かつこれ以上進入しないよう指揮者が判断した位置に設定されます。危険度が最も高いのは「放射線危険区域」です。" },
+            { q: "傷病者に対する除染措置において、最も優先されるべき手順は何ですか。", a: "3. 脱衣（衣服の切断等を含む）", options: ["1. 拭き取り（水で湿らせたガーゼによる）", "2. 洗い流し（シャワー）", "3. 脱衣（衣服の切断等を含む）", "4. 専門医療機関への搬送"], explanation: "除染の第一段階であり、汚染の大部分（60～90%）を除去できる「脱衣」が最も優先されます。手順は脱衣 $\\Rightarrow$ 拭き取り $\\Rightarrow$ 洗い流しの順です。" },
+            { q: "汚染を伴う傷病者の救急搬送時に、救急隊員が実施する汚染拡大防止措置として適切でないものはどれですか。", a: "4. 汚染拡大防止のため、傷病者を包む際にポリエチレンシートを優先的に使用する。", options: ["1. 救急車内の床、壁等をポリエチレンシート等で覆い養生する。", "2. 搬送車両の運転要員には、汚染していない者を充てる。", "3. 傷病者に呼吸保護具を着用させ、内部被ばくの防止に努める。", "4. 汚染拡大防止のため、傷病者を包む際にポリエチレンシートを優先的に使用する。"], explanation: "傷病者を包む際は、蒸れや皮膚への影響を避けるため、原則としてポリエチレンシートではなくシーツ等を使用します。" },
+            { q: "空間線量率を測定するサーベイメータの種類と特性に関する記述として、正しいものはどれですか。", a: "2. $\\text{NaI}$シンチレーション式は、低線量から中線量（$0.1\\mu \\text{Sv}/\\text{h}$～$10\\text{mSv}/\\text{h}$）の測定に適している。", options: ["1. $\\text{GM}$計数管式は、低線量から高線量まで測定でき、特に高線量率で実際より低い値を検出する「数え落とし」は発生しない。", "2. $\\text{NaI}$シンチレーション式は、低線量から中線量（$0.1\\mu \\text{Sv}/\\text{h}$～$10\\text{mSv}/\\text{h}$）の測定に適している。", "3. 電離箱式は、主として低線量（バックグラウンドレベル～$30\\mu \\text{Sv}/\\text{h}$）の測定に適している。", "4. 空間線量率計では、アルファ線やベータ線も主要な測定対象となる。"], explanation: "$\\text{NaI}$シンチレーション式は感度が高く、比較的低線量から中線量域の測定に適しています。$\\text{GM}$管式は高線量で数え落とし、電離箱式は中～高線量に適しています。" },
+            { q: "放射性同位元素等取扱施設において、臨界事故が発生する可能性について正しいものはどれですか。", a: "3. 放射性同位元素は臨界反応を起こさないため、臨界事故は起こる可能性はない。", options: ["1. 核燃料物質・核原料物質を取り扱っているため、臨界事故の発生の可能性がある。", "2. 放射線発生装置を取り扱っている場合は、電源が切れていても臨界事故の可能性がある。", "3. 放射性同位元素は臨界反応を起こさないため、臨界事故は起こる可能性はない。", "4. 密封線源を大量に使用している施設では、火災や爆発により臨界事故が発生する可能性がある。"], explanation: "臨界反応を起こすのは「核燃料物質・核原料物質」であり、「放射性同位元素」は臨界反応を起こしません。" },
+            { q: "汚染検査を実施する前に、重症の傷病者が確認された場合の対応として最も優先すべき事項は何ですか。", a: "2. 救命を優先させるため、必要最低限の汚染拡大防止措置（脱衣・パッケージング等）を行い、直ちに医療機関へ搬送する。", options: ["1. 除染基準（例えば$13,000 \\text{cpm}$）を下回るまで、シャワーによる除染を繰り返す。", "2. 救命を優先させるため、必要最低限の汚染拡大防止措置（脱衣・パッケージング等）を行い、直ちに医療機関へ搬送する。", "3. 創傷部位に汚染がないか、詳細な表面汚染検査を実施する。", "4. 専門家や放射線管理要員の到着を待ってから、指示に従い処置を開始する。"], explanation: "傷病者対処の優先順位は、1. 救命処置、2. 除染措置、3. その他の救急処置の順であり、重症の場合は救命が最優先されます。" },
+            // IV. 特殊災害と法規制
+            { q: "特殊災害を構成する5つの脅威の頭文字を取って呼ばれる「$\\text{CBRNE}$災害」における「$\\text{R}$」と「$\\text{N}$」が指す物質の組み合わせとして正しいものはどれですか。", a: "2. $\\text{R}$: 放射性物質（Radiological）、 $\\text{N}$: 核物質（Nuclear）", options: ["1. $\\text{R}$: 核物質（Nuclear）、 $\\text{N}$: 放射性物質（Radiological）", "2. $\\text{R}$: 放射性物質（Radiological）、 $\\text{N}$: 核物質（Nuclear）", "3. $\\text{R}$: 生物物質（Biological）、 $\\text{N}$: 核物質（Nuclear）", "4. $\\text{R}$: 放射性物質（Radiological）、 $\\text{N}$: 化学物質（Chemical）"], explanation: "$\\text{CBRNE}$は、Chemical（化学）、Biological（生物）、Radiological（放射性物質）、Nuclear（核）、Explosive（爆発物）の略です。" },
+            { q: "原子力災害対策特別措置法に基づき設定される区域のうち、原則として原子力施設から概ね半径$5 \\text{km}$の区域を指すものは何ですか。", a: "2. $\\text{PAZ}$（予防的防護措置を準備する区域）", options: ["1. $\\text{UPZ}$（緊急防護措置を準備する区域）", "2. $\\text{PAZ}$（予防的防護措置を準備する区域）", "3. 管理区域", "4. 放射線危険区域"], explanation: "$\\text{PAZ}$は原子力施設から概ね半径$5 \\text{km}$以内、$\\text{UPZ}$は概ね$5 \\text{km}$から$30 \\text{km}$の区域です。" },
+            { q: "放射性物質輸送物の輸送容器の基準等に関する記述として正しいものはどれですか。", a: "2. $\\text{B}$型輸送物は、苛酷な事故に遭遇した場合でも十分に耐えられるよう極めて頑丈なものとすることが要求されている。", options: ["1. $\\text{L}$型輸送物は、収納量が最も多く、極めて頑丈な容器とすることが要求される。", "2. $\\text{B}$型輸送物は、苛酷な事故に遭遇した場合でも十分に耐えられるよう極めて頑丈なものとすることが要求されている。", "3. 核分裂性輸送物ではないため、輸送中のいかなる場合においても臨界にならないことは考慮しなくてよい。", "4. $\\text{A}$型輸送物は、$\\text{B}$型輸送物と比べて収納量が制限されていない。"], explanation: "$\\text{B}$型輸送物は、容器自体で安全性を確保するため、苛酷な事故を想定した試験に耐えるよう設計されています。" },
+            { q: "放射能標識（三つ葉マーク）について、その3つの葉が意味する放射線の種類として、正しい組み合わせはどれですか。", a: "1. アルファ線、ベータ線、ガンマ線", options: ["1. アルファ線、ベータ線、ガンマ線", "2. ベータ線、ガンマ線、中性子線", "3. アルファ線、ガンマ線、エックス線", "4. アルファ線、ベータ線、中性子線"], explanation: "放射能標識の3つの葉は、アルファ線、ベータ線、ガンマ線という主要な3種類の放射線を意味しています。" },
+            { q: "放射線による被ばく線量を測定・記録するための単位「シーベルト（$\\text{Sv}$）」が表すものは何ですか。", a: "3. 放射線の量（実効線量）を人体影響の大きさで表す単位", options: ["1. 放射線を出す能力（放射能）", "2. 放射線を受けた単位質量の物質が吸収するエネルギー量（Gy）", "3. 放射線の量（実効線量）を人体影響の大きさで表す単位", "4. 1秒間あたりの電離作用の強さ"], explanation: "シーベルト（$\\text{Sv}$）は、吸収線量（Gy）に放射線の種類と臓器ごとの影響度を考慮した係数を乗じた、人体影響を表す単位（実効線量/等価線量）です。" },
+            // V. 追加質問（26問目以降）
+            { q: "放射性物質による体表面汚染が起こった際、体内に放射性物質を取り込むことで内部被ばくが発生する可能性のある部位は次のうちどれですか。", a: "2. 口", options: ["1. 髪", "2. 口", "3. 衣服", "4. 靴"], explanation: "口は体表面汚染された手などから放射性物質を取り込み、内部被ばくが発生する経路となります。" },
+            { q: "放射性物質輸送車両事故の現場において、核燃料物質（天然六フッ化ウランなど）が関係していることが判明した場合、救助活動時の防護レベルの指標として適切とされるものはどれですか。", a: "2. $\\text{P}$（有毒）", options: ["1. $\\text{N}$（通常）", "2. $\\text{P}$（有毒）", "3. $\\text{F}$（火災）", "4. $\\text{FP}$（有毒物質の発生＋火災）"], explanation: "天然六フッ化ウラン（$\\text{UF}_6$）は水分と反応してフッ化水素（$\\text{HF}$）という毒物を発生させるため、火災が発生していない場合は防護レベル$\\text{P}$が適用されます。" },
+            { q: "空間線量率がバックグラウンドレベル（平常時）と同程度であり、かつ、汚染検査の対象となる避難者の集合場所や除染区域が設定される区域は、ゾーニングにおいてどの区域を考慮して設定しますか。", a: "2. 準危険区域", options: ["1. 放射線危険区域", "2. 準危険区域", "3. 現場指揮本部", "4. 進入統制ライン"], explanation: "準危険区域（ウォームゾーン）は、汚染の可能性がある区域の外側から除染区域までを指し、除染所や汚染検査所が設置されます。" },
+            { q: "消防隊員が汚染検査を実施する際、ベータ線を測定対象とする場合の、測定器を被検者の体表面又は衣服の表面から離すべき適切な距離の目安は何ですか。", a: "3. $1 \\text{cm}$程度。", options: ["1. 検出器を接触させて測定する。", "2. $5 \\text{cm}$程度。", "3. $1 \\text{cm}$程度。", "4. 検出器の養生は行わずに、できる限り距離を縮める。"], explanation: "ベータ線の測定では、検出器の汚染防止のため養生し、体表面から$1 \\text{cm}$程度の距離で測定します。アルファ線の場合は遮へいを避けるため養生せず可能な限り近づけます。" },
+            { q: "放射性物質事故対応において、事業者が負う最も大きな責務の一つとして、ソースの中で明確に示されているのはどれですか。", a: "3. 事故の予防対策・応急対策。", options: ["1. 現場指揮本部の設置と区域設定の決定。", "2. 隊員への防護服の供給。", "3. 事故の予防対策・応急対策。", "4. 緊急被ばく医療体制の構築。"], explanation: "事故の予防対策と応急対策の実施は、放射性物質等を取り扱う事業者に課せられた最も重要な責務の一つです。" },
+            { q: "放射線が当たっているときに被ばくが生じ、放射線がなくなれば被ばくもなくなる被ばくの形態は何ですか。", a: "2. 外部被ばく", options: ["1. 内部被ばく", "2. 外部被ばく", "3. 体内汚染", "4. 創傷汚染"], explanation: "外部被ばくは、体外にある線源から放射線を受けるため、線源から離れるなど放射線がなくなれば被ばくも止まります。" },
+            { q: "核燃料物質・核原料物質の輸送において、輸送容器から$1\\text{m}$離れた地点で、空間線量率の上限値はどれくらいと定められていますか。", a: "2. $100\\mu \\text{Sv}/\\text{h}$を超えない", options: ["1. $20\\mu \\text{Sv}/\\text{h}$を超えない", "2. $100\\mu \\text{Sv}/\\text{h}$を超えない", "3. $2\\text{mSv}/\\text{h}$を超えない", "4. $50\\text{mSv}/\\text{h}$を超えない"], explanation: "核物質を収納した車両について、車両の表面から$1\\text{m}$の所で$100\\mu \\text{Sv}/\\text{h}$を超えないこととされています。$20\\mu \\text{Sv}/\\text{h}$は運転席、$2\\text{mSv}/\\text{h}$は車両表面の上限値です。" },
+            { q: "現場指揮本部を設置する際に、風向きを考慮して設置すべき場所として適切なのはどこですか。", a: "2. 風上", options: ["1. 風下", "2. 風上", "3. 現場から最も近い場所", "4. 現場指揮本部と危険区域が隣接する場所"], explanation: "現場指揮本部は、放射性物質の放出・飛散による汚染を防ぐため、風上、高所、遮へい物の外側等の周辺状況を考慮して設置されます。" },
+            { q: "放射性物質の事故対応において、汚染検査や除染措置を行う前に、傷病者の容体に応じて実施すべき措置は何ですか。", a: "2. 医学的トリアージ", options: ["1. 内部被ばくスクリーニング", "2. 医学的トリアージ", "3. 安定ヨウ素剤の投与", "4. 全隊員の個人被ばく線量の記録"], explanation: "重症度に応じて対応の優先順位を決めるため、救命処置を最優先とする医学的トリアージをまず実施します。" },
+            { q: "緊急被ばく医療体制において、「全国2箇所」に設置されており、高度専門的な診療を実施する医療機関の区分は何ですか。", a: "3. 三次被ばく医療機関", options: ["1. 初期被ばく医療機関", "2. 二次被ばく医療機関", "3. 三次被ばく医療機関", "4. 原子力災害拠点病院"], explanation: "三次被ばく医療機関は、高度な専門診療を行う機関として全国に2箇所（東日本：放医研、西日本：広島大学）設置されています。" },
+            { q: "放射性同位元素等取扱施設において、実効線量が3月間につき$1.3 \\text{mSv}$を超えるおそれのある区域として定められるものは何ですか。", a: "3. 管理区域", options: ["1. 準危険区域", "2. 消防警戒区域", "3. 管理区域", "4. 施設敷地緊急事態要避難区域"], explanation: "管理区域は、実効線量が3月間につき$1.3 \\text{mSv}$を超えるおそれのある区域などとして定められます。" },
+            { q: "放射線の透過力が大きいガンマ線を減弱させるのに、一般的に有効な遮へい材として適切でないものはどれですか。", a: "4. パラフィン", options: ["1. 鉛", "2. 鉄の厚い板", "3. 水（大量の水）", "4. パラフィン"], explanation: "ガンマ線には原子番号の大きい元素（鉛、鉄など）や密度の高い物質が有効です。パラフィンは中性子線を減弱させるのに有効な物質です。" },
+            { q: "放射性物質が体内に取り込まれた場合、その放射線を出す能力（放射能）が弱まるか、体外に排出されるまで、人体に影響を与え続けるのはなぜですか。", a: "3. 内部被ばくの定義上、体内に取り込まれた物質は体外に排出されるまで影響を与え続けるため。", options: ["1. 放射線が$\\text{DNA}$を直接攻撃する「直接作用」のみが発生するため。", "2. 外部被ばくが継続するため。", "3. 内部被ばくの定義上、体内に取り込まれた物質は体外に排出されるまで影響を与え続けるため。", "4. シーベルトとベクレルの単位変換が不可能になるため。"], explanation: "内部被ばくは、体内に存在する放射性物質が継続的に放射線を出し、その影響が続くためです。" },
+            { q: "放射性物質を輸送する車両に携行が義務付けられている書類として、以下のうちで最も一般的に重要視されるものはどれですか。", a: "2. 輸送物に関する情報を記載した書類（緊急連絡先等を含む）", options: ["1. 放射線管理要員の経歴書", "2. 輸送物に関する情報を記載した書類（緊急連絡先等を含む）", "3. 輸送車両の運転要員の健康診断書", "4. 輸送容器の設計図"], explanation: "輸送物に関する書類には、事故対応に必要な輸送物の種類、品名、緊急連絡先など、最重要情報が記載されています。" },
+            { q: "消防隊員が呼吸保護具として空気呼吸器を使用しない場合で、かつ放射性ヨウ素が発生していない環境において、全面マスクと組み合わせて使用できる吸着材は何ですか。", a: "2. 有毒ガス対応吸収缶", options: ["1. 防じんフィルター", "2. 有毒ガス対応吸収缶", "3. ヨウ素対応吸収缶", "4. 活性炭フィルター"], explanation: "放射性ヨウ素が発生していない（N）または有毒（P）事案で、全面マスクと有毒ガス対応吸収缶を組み合わせて使用することがあります。（放射性ヨウ素対応は専用の吸収缶が必要です。）" },
+            { q: "原子力施設等における火災等の事故において、事業者が行う措置として、適切なものはどれですか。", a: "2. 汚染が生じた場合は、すみやかに、その広がりの防止及び除去を行う。", options: ["1. 消防署への通報は、原子力災害対策特別措置法に規定された段階に達するまで延期する。", "2. 汚染が生じた場合は、すみやかに、その広がりの防止及び除去を行う。", "3. 放射線施設等で火災が起こった場合は、消火活動は行わず、消防隊の到着を待つ。", "4. 放射線障害を受けた者等がいても、消防隊員が到着するまで救出は行わない。"], explanation: "事業者は、汚染の広がりの防止と除去、火災時の消火活動、負傷者の救出などを速やかに実施する責務があります。" },
+            { q: "放射性物質事故対応における除染の方法として、体表面汚染検査において専門家等の助言が得られない場合の、避難者や資機材等の除染を要する基準（通常時）は、ベータ線で何$\\text{cpm}$を目安としますか。", a: "4. $1,300 \\text{cpm}$", options: ["1. $40,000 \\text{cpm}$", "2. $13,000 \\text{cpm}$", "3. $6,000 \\text{cpm}$", "4. $1,300 \\text{cpm}$"], explanation: "専門家等の助言が得られない場合の通常時の除染判断基準は、ベータ線で$1,300 \\text{cpm}$を目安とします。$40,000 \\text{cpm}$は原子力災害時の目安です。" },
+            { q: "汚染検査においてアルファ線を測定対象とする場合の、検出器の取り扱いに関する記述として正しいものはどれですか。", a: "2. アルファ線は透過力が弱いため、検出面を汚染させない範囲で可能な限り距離を縮めて測定し、検出器の養生は行わない。", options: ["1. ベータ線と同様に、検出器の汚染防止のためビニール袋等で包んで測定する。", "2. アルファ線は透過力が弱いため、検出面を汚染させない範囲で可能な限り距離を縮めて測定し、検出器の養生は行わない。", "3. アルファ線は服などで遮へいされるため、個人警報線量計で測定する。", "4. アルファ線は、専用の測定器ではなく、ガンマ線用の空間線量率計で代替測定が可能である。"], explanation: "アルファ線は紙一枚で遮へいされるほど透過力が弱いため、ビニール養生はせず、検出面を汚染させないよう注意しながら極力近づけて測定します。" },
+            { q: "原子力災害発生時、屋内退避の基準となる積算線量として定められている値はどれですか。", a: "2. $10\\text{mSv}$", options: ["1. $1\\text{mSv}$", "2. $10\\text{mSv}$", "3. $50\\text{mSv}$", "4. $100\\text{mSv}$"], explanation: "原子力災害発生初期における防護措置の判断基準として、屋内退避は積算$10\\text{mSv}$、避難は積算$50\\text{mSv}$が目安とされています。" },
+            { q: "放射性同位元素の輸送において、$\\text{L}$型輸送物に放射性標識の表示義務があるのはどのような場合ですか。", a: "1. 法令上、$\\text{L}$型輸送物に放射性標識の表示義務はない。", options: ["1. 法令上、$\\text{L}$型輸送物に放射性標識の表示義務はない。", "2. 輸送容器の表面線量率が$100\\mu \\text{Sv}/\\text{h}$を超える場合。", "3. 核燃料物質が収納されている場合。", "4. 放射性医薬品を輸送する場合。"], explanation: "$\\text{L}$型輸送物（少量低線量）については、輸送物表面の放射性標識の表示義務は法令上ありません。" },
+            { q: "放射線防護措置として、消防隊員が防護服や呼吸保護具を着装することに加えて、活動開始から終了時まで厳守すべき事項として、個人警報線量計の警報設定値は何と何を厳守することですか。", a: "3. 被ばく線量限度と個人警報線量計警報設定値", options: ["1. 空間線量率と表面汚染密度", "2. 放射線危険区域と準危険区域の境界", "3. 被ばく線量限度と個人警報線量計警報設定値", "4. 活動時間と移動距離"], explanation: "隊員の安全管理上、活動中の被ばく線量を管理し、「被ばく線量限度」と「個人警報線量計警報設定値」を厳守することが重要です。" },
+            { q: "放射線医学総合研究所（放医研）が発足させた、放射線被ばく事故や原子力災害の発生に備えて、被ばく医療の専門家を派遣するためのチームは何と呼ばれますか。", a: "2. $\\text{REMAT}$（緊急被ばく医療支援チーム）", options: ["1. $\\text{DMAT}$（災害派遣医療チーム）", "2. $\\text{REMAT}$（緊急被ばく医療支援チーム）", "3. $\\text{JAEA}$（日本原子力研究開発機構）", "4. $\\text{CBRNE}$即応部隊"], explanation: "$\\text{REMAT}$（Radiation Emergency Medical Assistance Team）は、QST（旧放医研）が中心となり、被ばく医療の専門家を派遣するために組織されました。" },
+            { q: "$\\text{NBC}$災害と$\\text{CBRNE}$災害の定義の違いについて、$\\text{CBRNE}$災害にのみ含まれる要素は何ですか。", a: "4. 爆発物（Explosive）", options: ["1. 核（Nuclear）", "2. 生物（Biological）", "3. 化学（Chemical）", "4. 爆発物（Explosive）"], explanation: "$\\text{CBRNE}$災害は、核（$\\text{N}$）から放射性物質（$\\text{R}$）が分離され、さらに爆発物（$\\text{E}$）が加わった定義です。$\\text{E}$（Explosive）が$\\text{CBRNE}$固有の要素です。" },
+            { q: "放射性物質輸送車両の事故が発生し、通報時点で放射性物質輸送と判断できた場合、先着隊が現場で最初に行うべき活動は何ですか。", a: "2. 被ばく防護資機材を積載している場合は、放射線測定を開始し、車両周囲及び要救助者付近の空間線量率を確認する。", options: ["1. 進入統制ラインの設定。", "2. 被ばく防護資機材を積載している場合は、放射線測定を開始し、車両周囲及び要救助者付近の空間線量率を確認する。", "3. 運転手から事故状況や輸送物について聴取し、携行書類を確認する。", "4. 救助にあたる隊員及び使用資機材を最小限に抑える。"], explanation: "放射性物質輸送と判断できた場合、安全を確保しつつ、まずは放射線測定を行い、空間線量率を確認することが初期の重要な活動です。" },
+            { q: "救急車内で汚染拡大防止措置を行う際、養生したシートを収納する手順として正しいものはどれですか。", a: "3. 上部から取り外しを開始し（天井部から）、シートは内側に丸めながら収納する。", options: ["1. 床面から取り外しを開始し、シートは外側に丸めながら収納する。", "2. 天井及びハッチの養生を最初に行い、シートは内側に丸めながら収納する。", "3. 上部から取り外しを開始し（天井部から）、シートは内側に丸めながら収納する。", "4. 床面の養生を最後に行い、最後に天井の養生を収納する。"], explanation: "養生シートは、上部から下部へ、汚染面が内側になるように丸めながら除去し、汚染の拡大を防ぎます。" }
+        ];
+
+        // --- 2. STATE & VARIABLES ---
+        let currentQuestions = [];
+        let userAnswers = {};
+        const NUM_QUESTIONS = 5;
+        let isKaTeXReady = false;
+
+        // --- 3. CORE LOGIC ---
+
+        // Utility to shuffle an array (Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        /**
+         * Loads and renders 5 random questions for a new quiz session.
+         */
+        function loadQuiz() {
+            // 1. Reset state
+            userAnswers = {};
+            // 2. Select 5 random questions
+            shuffleArray(quizData);
+            currentQuestions = quizData.slice(0, NUM_QUESTIONS);
+            // 3. Render
+            renderQuiz();
+            // 4. Update UI
+            document.getElementById('quiz-area').classList.remove('hidden');
+            document.getElementById('results-area').classList.add('hidden');
+            document.getElementById('submit-button').disabled = true;
+            document.getElementById('retry-button').classList.add('hidden');
+        }
+
+        /**
+         * Dynamically generates the HTML for the current 5 questions.
+         */
+        function renderQuiz() {
+            const questionsList = document.getElementById('questions-list');
+            questionsList.innerHTML = ''; // Clear previous content
+
+            currentQuestions.forEach((qItem, qIndex) => {
+                const qNum = qIndex + 1;
+                let optionsHtml = '';
+                
+                // Shuffle options
+                const shuffledOptions = [...qItem.options];
+                shuffleArray(shuffledOptions);
+
+                shuffledOptions.forEach((optText, optIndex) => {
+                    const optionId = `q${qNum}opt${optIndex}`;
+                    
+                    // The value of the radio button must be the full text for matching
+                    const safeOptText = optText.replace(/"/g, '&quot;'); 
+
+                    optionsHtml += `
+                        <label for="${optionId}" class="flex items-start p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-indigo-50 transition duration-150 shadow-sm border border-gray-100">
+                            <input type="radio" id="${optionId}" name="question${qNum}" value="${safeOptText}"
+                                onchange="handleAnswer(${qNum}, this.value)"
+                                class="mt-1 h-5 w-5 text-primary focus:ring-primary border-gray-300">
+                            <!-- Display span uses the original text for KaTeX rendering -->
+                            <span class="ml-4 text-gray-700 text-base katex-content">${optText}</span>
+                        </label>
+                    `;
+                });
+
+                questionsList.innerHTML += `
+                    <div id="question-${qNum}" class="mb-10 p-5 border border-indigo-200/50 bg-card-light rounded-2xl shadow-xl">
+                        <h3 class="text-lg font-bold text-primary mb-3">
+                            問${qNum}. <span class="text-gray-800 katex-content">${qItem.q}</span>
+                        </h3>
+                        <div class="space-y-3">${optionsHtml}</div>
+                    </div>
+                `;
+            });
+
+            // After inserting HTML, render LaTeX
+            if (isKaTeXReady) {
+                renderLatex();
+            }
+        }
+
+        /**
+         * Captures user's answer and checks if all questions are answered.
+         * @param {number} qNum - The question number (1-5).
+         * @param {string} selectedValue - The selected option text.
+         */
+        function handleAnswer(qNum, selectedValue) {
+            userAnswers[qNum] = selectedValue;
+            
+            const answeredCount = Object.keys(userAnswers).length;
+            const submitButton = document.getElementById('submit-button');
+
+            if (answeredCount === NUM_QUESTIONS) {
+                submitButton.disabled = false;
+            } else {
+                submitButton.disabled = true;
+            }
+        }
+
+        /**
+         * Calculates the score and displays the results with rationales.
+         */
+        function scoreQuiz() {
+            let correctCount = 0;
+            const explanationsList = document.getElementById('explanations-list');
+            explanationsList.innerHTML = ''; // Clear previous results
+
+            currentQuestions.forEach((qItem, qIndex) => {
+                const qNum = qIndex + 1;
+                // Note: userAnswer is the full option string, which should match qItem.a
+                const userAnswer = userAnswers[qNum] || '';
+                const isCorrect = (userAnswer === qItem.a);
+
+                if (isCorrect) {
+                    correctCount++;
+                }
+
+                // Generate explanation card
+                explanationsList.innerHTML += `
+                    <div class="p-5 sm:p-6 rounded-xl shadow-md border-t-4 ${isCorrect ? 'border-success-light bg-green-50' : 'border-error-light bg-red-50'}">
+                        <h4 class="text-lg font-bold mb-3 ${isCorrect ? 'text-success-light' : 'text-error-light'}">
+                            問${qNum}. ${isCorrect ? '正解' : '不正解'}
+                        </h4>
+                        <div class="mb-3">
+                            <p class="font-semibold text-gray-800 katex-content">${qItem.q}</p>
+                        </div>
+                        <div class="mt-4 p-3 rounded-lg border border-gray-300 bg-white">
+                            <p class="text-sm font-medium text-gray-500">あなたの回答:</p>
+                            <p class="text-gray-900 font-semibold katex-content">${userAnswer || '未回答'}</p>
+                        </div>
+                        ${!isCorrect ? `
+                            <div class="mt-4 p-3 rounded-lg border border-success-light bg-green-100">
+                                <p class="text-sm font-medium text-green-700">正解:</p>
+                                <p class="text-green-900 font-semibold katex-content">${qItem.a}</p>
+                            </div>
+                        ` : ''}
+                        <div class="mt-4">
+                            <p class="text-sm font-medium text-gray-500">解説・根拠:</p>
+                            <p class="text-gray-700 katex-content">${qItem.explanation}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Calculate final score and message
+            const score = `${correctCount} / ${NUM_QUESTIONS}問`;
+            let feedback = '';
+            let scoreColor = '';
+
+            if (correctCount === NUM_QUESTIONS) {
+                feedback = 'パーフェクト！素晴らしい知識をお持ちです。この調子で研鑽を続けてください。';
+                scoreColor = 'bg-success-light text-white';
+            } else if (correctCount >= NUM_QUESTIONS - 1) {
+                feedback = 'あと一歩です！弱点を克服し、完全な理解を目指しましょう。';
+                scoreColor = 'bg-secondary text-gray-900';
+            } else {
+                feedback = '基礎知識の再確認が必要です。解説を読んで理解を深めましょう。';
+                scoreColor = 'bg-error-light text-white';
+            }
+
+            document.getElementById('score-text').textContent = `スコア: ${score}`;
+            document.getElementById('score-text').className = `px-4 py-2 rounded-full shadow-md font-extrabold ${scoreColor}`;
+            document.getElementById('feedback-message').textContent = feedback;
+            
+            // Show results and hide quiz
+            document.getElementById('quiz-area').classList.add('hidden');
+            document.getElementById('results-area').classList.remove('hidden');
+
+            // Render LaTeX for the explanations
+            if (isKaTeXReady) {
+                renderLatex();
+            }
+            window.scrollTo(0, 0); // Scroll to top of results
+        }
+
+        /**
+         * Resets the quiz to start a new round.
+         */
+        function retryQuiz() {
+            loadQuiz();
+            window.scrollTo(0, 0); // Scroll to top of quiz
+        }
+
+        // --- 4. UTILITIES ---
+
+        /**
+         * Renders LaTeX content using KaTeX on all elements with class 'katex-content'.
+         */
+        function renderLatex() {
+            if (window.renderMathInElement) {
+                document.querySelectorAll('.katex-content').forEach(element => {
+                    // Prevent repeated rendering on elements that might be re-rendered (like the whole list)
+                    element.classList.add('no-render'); 
+                });
+                
+                window.renderMathInElement(document.getElementById('app'), {
+                    // Delimiters for inline and display math
+                    delimiters: [
+                        { left: "$$", right: "$$", display: true },
+                        { left: "\\[", right: "\\]", display: true },
+                        { left: "$", right: "$", display: false },
+                        { left: "\\(", right: "\\)", display: false }
+                    ],
+                    // Only render elements inside the main app container
+                    ignoredClasses: ["no-render"] 
+                });
+            }
+        }
+
+
+        // --- 5. INITIALIZATION ---
+
+        window.onload = function() {
+            // KaTeX auto-render script will set the global function renderMathInElement
+            // We wait for it to be ready
+            const checkKaTeXReady = setInterval(() => {
+                if (window.renderMathInElement) {
+                    clearInterval(checkKaTeXReady);
+                    isKaTeXReady = true;
+                    loadQuiz();
+                }
+            }, 100);
+        };
+
+    </script>
+</body>
+</html>
