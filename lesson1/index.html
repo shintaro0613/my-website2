@@ -1,1 +1,289 @@
+lesson1/index.html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心電図 eラーニングクイズ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #111827; /* Tailwind gray-900 */
+        }
+        .quiz-container {
+            background-color: #1f2937; /* Tailwind gray-800 */
+            border: 1px solid #374151; /* Tailwind gray-700 */
+        }
+        .question-card {
+            border-bottom: 1px solid #374151;
+        }
+        .question-card:last-child {
+            border-bottom: none;
+        }
+        .option-label {
+            border: 1px solid #4b5563; /* Tailwind gray-600 */
+            transition: all 0.2s ease-in-out;
+        }
+        .option-label:hover {
+            background-color: #374151; /* Tailwind gray-700 */
+        }
+        input[type="radio"]:checked + .option-label {
+            background-color: #3b82f6; /* Tailwind blue-500 */
+            border-color: #2563eb; /* Tailwind blue-600 */
+            color: white;
+        }
+        .btn-primary {
+            background-color: #2563eb; /* Tailwind blue-600 */
+            color: white;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8; /* Tailwind blue-700 */
+        }
+        .btn-secondary {
+            background-color: #4b5563; /* Tailwind gray-600 */
+            color: white;
+            transition: background-color 0.2s;
+        }
+        .btn-secondary:hover {
+            background-color: #374151; /* Tailwind gray-700 */
+        }
+
+        /* Result Styles */
+        .correct-answer {
+            background-color: #10b98120; /* Tailwind emerald-500 with opacity */
+            border-color: #10b981; /* Tailwind emerald-500 */
+        }
+        .incorrect-answer {
+            background-color: #ef444420; /* Tailwind red-500 with opacity */
+            border-color: #ef4444; /* Tailwind red-500 */
+        }
+        .explanation {
+            background-color: #374151; /* Tailwind gray-700 */
+            border-left: 4px solid #f59e0b; /* Tailwind amber-500 */
+        }
+        .result-header {
+            border-bottom: 2px solid #f59e0b; /* Tailwind amber-500 */
+        }
+    </style>
+</head>
+<body class="text-gray-200 flex items-center justify-center min-h-screen p-4">
+
+    <div class="quiz-container w-full max-w-4xl mx-auto rounded-xl shadow-2xl overflow-hidden">
+        <header class="p-6 bg-gray-900/50">
+            <h1 class="text-2xl md:text-3xl font-bold text-amber-400">心電図 eラーニングクイズ</h1>
+            <p class="mt-2 text-gray-400">心電図と循環器疾患の知識を深めるためのクイズです。</p>
+        </header>
+
+        <main class="p-6 md:p-8">
+            <div id="quiz-area">
+                <!-- Questions will be loaded here by JavaScript -->
+            </div>
+
+            <div id="result-area" class="hidden">
+                <!-- Results will be shown here by JavaScript -->
+            </div>
+
+            <div id="button-area" class="mt-8 flex justify-center">
+                <button id="submit-btn" class="btn-primary font-bold py-3 px-8 rounded-lg shadow-lg text-lg">採点する</button>
+                <button id="retry-btn" class="btn-secondary font-bold py-3 px-8 rounded-lg shadow-lg text-lg hidden">再挑戦する</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const quizData = [
+            // Q1-Q5: Brugada症候群
+            { question: "Q1. Brugada（ブルガダ）症候群の診断確定に必須とされる心電図所見はどれか？", options: ["J点またはST部分が基線から0.2mV以上上昇するType 1 coved型ST上昇", "下向きに凸のsaddle back型（Type 2）ST上昇", "V1〜V3誘導におけるST低下", "Type 1 coved型ST上昇と異常Q波"], answer: "A", explanation: "診断確定には、12誘導心電図のV1からV2（V3）誘導において、J点またはST部分が基線から0.2mV以上上昇する**Type 1のcoved型ST上昇を認めることが必須**とされています。" },
+            { question: "Q2. Brugada（ブルガダ）症候群の心電図所見を顕在化させるために用いられることがある薬剤の系統はどれか？", options: ["β遮断薬", "カルシウム拮抗薬", "Na+チャネル遮断薬", "アンジオテンシン変換酵素阻害薬（ACE阻害薬）"], answer: "C", explanation: "Brugada（ブルガダ）症候群を積極的に疑う場合、Na+チャネル遮断薬（例：ピルジカイニド）の薬物負荷試験を行います。これは、**Na+チャネル遮断薬投与によりCoved型ST上昇が顕在化することがある**ためです。" },
+            { question: "Q3. Brugada（ブルガダ）症候群の原因遺伝子のなかで、最も多く報告されている、ナトリウムチャネル（NaV1.5）のα-サブユニットをコードする遺伝子はどれか？", options: ["SCN4A", "SCN5A", "KCNE1", "KCNQ1"], answer: "B", explanation: "Brugada（ブルガダ）症候群の15-30%の症例に遺伝子異常（変異）が報告されており、その**ほとんどは心臓に発現しているナトリウムチャネル（NaV1.5）のα-サブユニットをコードする*SCN5A*遺伝子**です。" },
+            { question: "Q4. Brugada（ブルガダ）型心電図を有する人で、心室細動（VF）や突然死の危険性が高いとされる臨床的に最も重要な所見はどれか？", options: ["職場検診などで見つかった無症状のType 2心電図を有すること", "50歳以上の成人男性であること", "遺伝子（*SCN5A*）変異が確認されないこと", "自然発生の（薬物負荷ではない）Type1心電図を有すること"], answer: "D", explanation: "臨床的に最も重要なリスクは、**自然発生の（薬物負荷ではない）Type1心電図を有すること**、不整脈に起因する意識消失発作、あるいは夜間に苦悶様の呼吸を有することと指摘されています。" },
+            { question: "Q5. Brugada（ブルガダ）症候群における遺伝子検査が一般的に推奨される対象として、適切でないものはどれか？", options: ["突然死やBrugada症候群などの家族歴がある方", "心電図P-R時間の延長やQRS幅の拡大等の伝導障害が示唆される方", "検査を強く希望しない無症状の患者", "失神発作やVF既往などの有症状の方"], answer: "C", explanation: "必ずしも全てのBrugada（ブルガダ）症候群の方に遺伝子検査が推奨されるわけではありません。一般的に推奨されるのは、家族歴、心臓伝導障害の示唆、失神発作やVF既往などの有症状の方、または**遺伝子検査を強く希望される方**が対象となります。" },
+            // Q6-Q10: 心臓の電気伝導と生理学
+            { question: "Q6. 心臓のポンプ機能において、心房が収縮する理想的なタイミングはいつか？", options: ["心室が収縮して血液を送り出している最中", "心室が拡張して容積を大きくしているとき", "洞結節からの電気信号が心室に到達した瞬間", "心臓全体が同時に収縮するとき"], answer: "B", explanation: "心房は補助ポンプの役割を担っており、心室が拡張して容積を大きくしているときに、**心房は収縮して心室に血液を送り出し**、心室のポンプ機能を補助します。" },
+            { question: "Q7. 心室が収縮しているとき、心房の動きとして正しいものはどれか？", options: ["心房も同時に収縮している", "心房は収縮を終え、拡張している", "心房は次の電気刺激を待っている", "心房は心室側に血液を逆流させている"], answer: "B", explanation: "心室が収縮しているときは、心房は**拡張して、肺あるいは全身から血液を吸い込んでいます**。心房と心室は逆モーションで動いています。" },
+            { question: "Q8. 心房から心室へ電気信号を伝達する唯一の通り道であり、「関所」として電気を遅延させる役割を持つ構造はどれか？", options: ["プルキンエ線維", "心室中隔", "洞結節", "房室結節"], answer: "D", explanation: "心房と心室との間には通り道が1つしかなく、それが房室接合部（房室結節＋ヒス束）です。電気は**房室結節**内で\"待て\"のサインが出され、**心房の収縮が終わるまで伝導が遅く**なります（タメをつくる）。" },
+            { question: "Q9. 心室筋に電気を伝え、心室全体を素早く興奮させることで効率のよい収縮を実現している、最も伝導速度が速い刺激伝導系の構成要素はどれか？", options: ["洞結節 (0.05m/秒程度)", "房室結節 (0.05m/秒程度)", "ヒス束 (1m/秒)", "脚・プルキンエ線維 (4m/秒)"], answer: "D", explanation: "脚・プルキンエ線維は心筋よりも伝導速度が速く、**4m/秒**という高速で心室内を伝導し、効率よい心室収縮を行います。" },
+            { question: "Q10. 心電図の基本波形のうち、心室の興奮が消失し元に戻る様子（再分極）を表す波形はどれか？", options: ["P波", "QRS波", "T波", "U波"], answer: "C", explanation: "T波は**心室の興奮が消失し、元に戻る様子を表す波形**であり、山型に現れるのが特徴です。" },
+            // Q11-Q15: 心電図の基本波形と命名規則
+            { question: "Q11. 心電図波形の基本構造であるQRS波のうち、最初に現れる下向きの波形（陰性波）の名称はどれか？", options: ["R波", "S波", "Q波", "U波"], answer: "C", explanation: "QRS波の命名ルールにおいて、**初めに出現する下向きの波形はQ波とよばれます**。" },
+            { question: "Q12. QRS波の命名ルールにおいて、「2回目に出現する上向きの波形」を示す記号はどれか？", options: ["R", "R’", "S", "Q"], answer: "B", explanation: "QRS波の命名ルールにおいて、**2回目に出現する上向きの波形はR’とダッシュをつけて記されます**。" },
+            { question: "Q13. 心電図記録紙において、PQ間隔が延長している（5mm/0.20秒以上）場合、考えられる異常として正しいものはどれか？", options: ["WPW症候群 (PQ間隔短縮)", "房室ブロック", "左房負荷", "右房負荷"], answer: "B", explanation: "PQ間隔の正常値は3mm（0.12秒）以上、5mm（0.20秒）未満です。**5mm（0.20秒）以上の延長は房室ブロック**などの異常を示唆します。" },
+            { question: "Q14. 心電図のST部分が基線より上昇している（ST上昇）場合に鑑別が必要な疾患として、適切でないものはどれか？", options: ["心筋梗塞 (ST上昇型急性心筋梗塞 STEMI)", "たこつぼ症候群", "心膜炎", "心筋虚血 (ST低下)"], answer: "D", explanation: "ST上昇は心筋梗塞、心筋炎などで見られます。心筋虚血や心肥大では**ST部分の下降（ST低下）**が見られます。" },
+            { question: "Q15. 心電図のP波が幅2.75mm（0.11秒）以上になった場合、示唆される異常として正しいものはどれか？", options: ["右房負荷 (高さ2.5mm以上)", "左房負荷", "心室期外収縮", "WPW症候群"], answer: "B", explanation: "P波の幅の正常値は2.75mm（0.11秒）未満です。**幅2.75mm以上の場合は左房負荷**が疑われます。" },
+            // Q16-Q20: 誘導と電極装着
+            { question: "Q16. 12誘導心電図において、心臓を「どこから見ているか」を示す用語はどれか？", options: ["電極", "誘導", "チャネル", "波形"], answer: "B", explanation: "心電図の基本的な誘導法は12種類あり、**「誘導」とは心臓を“どこから見ているか”**と考えることができます。" },
+            { question: "Q17. 12誘導心電図の記録用紙において、左側に示される6つの誘導の総称はどれか？", options: ["胸部誘導 (V1-V6)", "肢誘導 (I, II, III, aVL, aVF, aVR)", "高位肋間記録", "XYZ誘導"], answer: "B", explanation: "12誘導は記録用紙の左側に示される**肢誘導（Ⅰ, Ⅱ, Ⅲ, aVL, aVF, aVR）**と、右側に示される胸部誘導（V1-V6）に分かれます。" },
+            { question: "Q18. 12誘導心電図の胸部誘導電極のうち、V1を装着する位置として正しいものはどれか？", options: ["胸骨左縁第4肋間 (V2)", "胸骨右縁第4肋間", "鎖骨中線上第5肋間 (V4)", "前腋窩線上第5肋間 (V5)"], answer: "B", explanation: "V1は**胸骨右縁第4肋間**に付けます。V2は対側の胸骨左縁第4肋間です。" },
+            { question: "Q19. 12誘導心電図の胸部誘導電極のうち、V4と同じ高さの中腋窩線に装着する電極はどれか？", options: ["V3", "V4", "V5", "V6"], answer: "D", explanation: "V6は**V4と同じ高さの中腋窩線**につける決まりになっています。" },
+            { question: "Q20. Brugada症候群を疑った場合に、通常の第4肋間以外にV1～V3誘導で心電図を記録することが望ましい場所はどこか？", options: ["下位肋間記録（第5または第6肋間）", "高位肋間記録（第3または第2肋間）", "背部誘導記録", "四肢の遠位端"], answer: "B", explanation: "Brugada症候群を疑った場合は、通常の第4肋間以外に、**高位肋間記録（第3または第2肋間）**でCoved型ST上昇を認める場合もあるため、1〜2肋間上の誘導での心電図も記録してみることが望ましいです。" },
+            // Q21-Q25: 心電図検査の種類と特徴
+            { question: "Q21. 不整脈や虚血性心疾患による入院患者さん、急変リスクのある患者さんに対して、持続的なモニタリングに適している心電図の種類はどれか？", options: ["12誘導心電図", "ホルター心電図", "運動負荷心電図", "モニター心電図"], answer: "D", explanation: "**モニター心電図**は、持続的なモニタリングに適しており、不整脈や虚血性心疾患の入院患者、急変リスクのある患者さんに用いられます。" },
+            { question: "Q22. 安静時には現れない異常を検出するため、心臓に負荷がかかった場合の波形を記録できる心電図の種類はどれか？", options: ["12誘導心電図", "ホルター心電図", "運動負荷心電図", "モニター心電図"], answer: "C", explanation: "**運動負荷心電図**は、心臓に負荷がかかった場合の波形を記録でき、安静時には表れない異常を検出するために用いられます。トレッドミル負荷心電図はその一種です。" },
+            { question: "Q23. トレッドミル負荷心電図検査でわかることとして、適切でないものはどれか？", options: ["安静時にはわからない不整脈の診断", "虚血性心疾患の診断とその重症度の判定", "運動誘発性不整脈の診断", "安静時におけるP波の形態の微細な変化"], answer: "D", explanation: "トレッドミル負荷心電図は、運動中にどんな症状が起こるか、心臓の状態や血圧の変化を調べ、安静時にはわからない不整脈や狭心症、虚血性心疾患の診断などを行います。安静時のP波の微細な形態変化の評価は、通常12誘導心電図や高解像度記録で行われます。" },
+            { question: "Q24. ホルター心電図の記録に関して、皮膚-電極間のインピーダンスを減少させ安定させるために最も効果的な処置はどれか？", options: ["酒精綿（アルコール）処理", "電極装着部位の角質除去", "電極を温める", "リード線を強く固定する"], answer: "B", explanation: "電極装着部位の**角質を除去することにより皮膚-電極間のインピーダンス（抵抗値）が減少し安定します**。酒精綿処理は汚れ・皮脂を落とす効果はあっても、インピーダンスを下げる効果はあまり期待できません。" },
+            { question: "Q25. ホルター解析において、24時間の心拍を形ごとに集めてラベリングする作業は、主に「カタチ」のどのような異常に着目しているか？", options: ["規律的に動いているか", "RR間隔の早期率", "通常と異なる“カタチ”（波形）があるかないか", "心拍数（HR）の変動度合い"], answer: "C", explanation: "ホルター解析装置は、「カタチ」（通常と異なるカタチがあるか、どんな種類のカタチがあるか）と「リズム」（規律的に動いているか、イレギュラーな乱れがないか）に着目してデータを解析します。" },
+            // Q26-Q35: 虚血性心疾患
+            { question: "Q26. 心筋梗塞と狭心症の違いとして正しいものはどれか？", options: ["心筋梗塞は可逆性、狭心症は不可逆性の病態である", "狭心症は心筋が壊死しているが、心筋梗塞は壊死していない", "狭心症は心筋が壊死していない可逆性の病態であり、心筋梗塞は心筋が壊死している不可逆性の病態である", "両者ともに常にST上昇を伴う"], answer: "C", explanation: "心筋梗塞は心筋が壊死した不可逆性の状態（壊死）を指し、狭心症は血流不足があっても心筋が壊死していない可逆性の状態を指します。" },
+            { question: "Q27. 冠動脈の血流障害の原因となる粥腫（プラーク）のうち、徐々に進行して血管内腔を狭窄させる、ゴムのような線維成分が多いものを何と呼ぶか？", options: ["不安定プラーク", "血栓", "安定プラーク", "攣縮（スパスム）"], answer: "C", explanation: "**安定プラーク**はゴムのような線維成分が多く、ゆっくり進行して血管内腔を徐々に狭窄させます。" },
+            { question: "Q28. 急性冠症候群（ACS）の中で、冠動脈の完全途絶によりST上昇を伴う病態を何と呼ぶか？", options: ["不安定狭心症 (UAP)", "非ST上昇型心筋梗塞 (NSTEMI)", "ST上昇型心筋梗塞 (STEMI)", "安定狭心症 (SAP)"], answer: "C", explanation: "急性冠症候群のうち、血流の完全途絶をきたし、通常**ST上昇を伴うものをST上昇型心筋梗塞（STEMI）**といいます。" },
+            { question: "Q29. 急性心筋梗塞の心電図変化のうち、発症後数分から数時間に現れる所見として正しいものはどれか？", options: ["異常Q波の出現 (数時間〜12時間)", "冠性T波の出現 (12時間〜数日)", "超急性期T波の出現 (発症直後)", "ST上昇（別の誘導でST低下を伴う：reciprocal change）"], answer: "D", explanation: "急性心筋梗塞の経時的変化で、超急性期T波の出現に続いて（数分〜数時間）**ST上昇**が現れます。このとき、他の誘導でST低下（reciprocal change）が見られることがあります。" },
+            { question: "Q30. 貫壁性心筋梗塞の部位診断で、左室下壁梗塞を反映する誘導として正しい組み合わせはどれか？", options: ["V1〜V4", "Ⅰ誘導、aVL、V5、V6", "Ⅱ誘導、Ⅲ誘導、aVF", "V3R〜V5R"], answer: "C", explanation: "左室下壁梗塞は主に右冠動脈の閉塞が原因であり、**下方向を反映するⅡ誘導、Ⅲ誘導、aVF**でST上昇とQ波が見られます。" },
+            { question: "Q31. 貫壁性心筋梗塞の部位診断で、左室後壁梗塞の心電図上の特徴として正しいものはどれか？", options: ["V1、V2誘導でST上昇が見られる", "Ⅱ、Ⅲ、aVF誘導でST低下が見られる", "対側変化として、V1、V2誘導にST低下とR波の増高が見られる", "V3R〜V5R誘導でST上昇が見られる"], answer: "C", explanation: "左室後壁梗塞は左室前壁の裏側であるため、通常の誘導ではST上昇が見られません。対側（鏡面）変化として、**V1、V2のST低下と、後壁のQ波を反映するV1、V2のR波の増高**が特徴です。" },
+            { question: "Q32. 冠動脈攣縮（スパスム）が原因で、安静時に発作が生じ、貫壁性虚血となり一過性にST上昇を認める狭心症はどれか？", options: ["労作性狭心症", "不安定狭心症", "異型狭心症（Variant angina pectoris：VAP）", "安定狭心症"], answer: "C", explanation: "冠動脈スパスムにより完全閉塞になればST上昇をきたし、**異型狭心症**と呼ばれます。異型狭心症は通常、安静時、特に夜間や明け方に多いとされています。" },
+            { question: "Q33. 心筋梗塞の急性期において、看護師が特に注意すべき不整脈として、下壁・後壁の虚血から反射性の徐脈をきたす可能性が高いのはどれか？", options: ["心室頻拍（VT）", "心房細動（AF）", "洞性徐脈、房室ブロック", "心室期外収縮（PVC）"], answer: "C", explanation: "右冠動脈は洞結節や房室結節への動脈を分枝しており、また下壁・後壁の虚血から反射性の徐脈をきたすことがあります。したがって、**洞性徐脈や房室ブロック**への注意が必要です。" },
+            { question: "Q34. 異常Q波と判定される心電図所見の基準として正しいものはどれか？", options: ["Q波の幅が0.02秒以上、R波の高さの1/2以上の深さ", "Q波の幅が0.03秒以上、R波の高さの1/3以上の深さ", "Q波の幅が0.04秒（1mm）以上、かつR波の高さの1/4以上の深さ", "Q波が陽性（上向き）に出現した場合"], answer: "C", explanation: "**Q波の幅が0.04秒（1mm）以上、かつR波の高さの1/4以上の深さの波形**を異常Q波といいます。" },
+            { question: "Q35. ST-Tの異常でST部分が基線より下降（ST低下）している場合に考えられる主な原因はどれか？", options: ["心筋梗塞（STEMI）", "心筋虚血", "心筋炎", "たこつぼ症候群"], answer: "B", explanation: "ST部分の上昇は心筋梗塞や心筋炎などですが、**ST部分の下降（低下）は心筋虚血**や心肥大などが原因として挙げられます。" },
+            // Q36-Q45: 不整脈
+            { question: "Q36. 心電図において、心拍数が60回/分未満で示される状態はどれか？", options: ["頻脈 (100回/分以上)", "徐脈", "洞調律", "心房細動"], answer: "B", explanation: "心拍数の正常値は60回/分以上、100回/分未満であり、**60回/分未満は徐脈**とされます。" },
+            { question: "Q37. 心電図で脈が触れない場合、即座にCPR（心肺蘇生）を開始すべき緊急性の高い異常波形はどれか？", options: ["発作性上室頻拍（PSVT）", "心室頻拍（VT）", "心房期外収縮（PAC）", "洞頻脈"], answer: "B", explanation: "心室頻拍（VT）は脈が触れなければ**即CPR**が必要です。心室細動（VF）も実質上の心停止で即座のドクターコールが必要です。" },
+            { question: "Q38. 心臓のポンプ機能が完全に失われ、実質上の心停止であり、すぐにドクターコールが必要となる波形はどれか？", options: ["心室頻拍（VT）", "心房粗動（AFL）", "心室細動（VF）", "洞不全症候群（SSS）"], answer: "C", explanation: "心室細動（VF）は心臓のポンプ機能が完全に失われた状態で、**実質上の心停止**であり、すぐにドクターコールが必要です。" },
+            { question: "Q39. 心房期外収縮（PAC）が多発する場合、循環血漿量の不足が疑われることがありますが、心房期外収縮（PAC）の心電図でみられるP波の特徴はどれか？", options: ["P波の陰性化", "P波の消失", "異所性P波がみられる", "P波がQRS波に重なる"], answer: "C", explanation: "心房期外収縮（APC）では**異所性P波**がみられます。" },
+            { question: "Q40. 心房細動（AF）の心電図の特徴として正しいものはどれか？", options: ["P波が正常にみられる", "QRS波が規則正しく出現する", "P波はみられず、不規則なf波が出現する", "QRS波に重なって逆行性P波がみられる"], answer: "C", explanation: "心房細動（Af）では**P波はみられず**、不規則な**f波**が出現するのが特徴です。" },
+            { question: "Q41. 房室ブロックのうち、モビッツⅡ型（MobitzⅡ型）の場合の推奨される治療法はどれか？", options: ["経過観察でよい", "薬剤の影響を確認する", "ペースメーカーの適応", "循環血漿量を補う"], answer: "C", explanation: "Ⅱ度房室ブロックのモビッツⅡ型は、**ペースメーカーの適応**となることが示されています。" },
+            { question: "Q42. 電解質異常が原因で心筋細胞の再分極に影響が及び、ST部分の短縮または消失、QT間隔の短縮がみられるのはどのような電解質異常か？", options: ["低カリウム血症", "高カリウム血症", "高カルシウム血症", "低カルシウム血症 (QT間隔延長)"], answer: "C", explanation: "**高カルシウム血症**では、ST部分の短縮または消失、QT間隔の短縮がみられます。" },
+            { question: "Q43. 電解質異常によって心筋細胞の再分極に影響が及び、ST低下、平坦なT波、U波の増高がみられるのはどのような電解質異常か？", options: ["高カルシウム血症", "高カリウム血症", "低カルシウム血症", "低カリウム血症"], answer: "D", explanation: "**低カリウム血症**になると、ST低下、平坦なT波、U波の増高がみられます。" },
+            { question: "Q44. 心室頻拍（VT）から心室細動（VF）への移行を防ぐために、心室性不整脈のどのような特徴に特に注意すべきか？", options: ["P波の出現の有無", "幅広QRS波の増加、連発、多源性、R on T", "RR間隔が極端に長くなること", "Ⅰ度房室ブロックの出現"], answer: "B", explanation: "心臓のポンプ機能を担う心室で起こる期外収縮は、VTやVFの引き金になります。心室性期外収縮の**幅広QRS波の増加、連発、形の変化（多源性）、R on T**には特に注意が必要です。" },
+            { question: "Q45. 発作性上室頻拍（PSVT）の心電図変化としてみられることがあるのはどれか？", options: ["のこぎりの歯状のF波", "P波の消失", "QRS波に重なる、または逆行性P波", "幅広のQRS波"], answer: "C", explanation: "発作性上室頻拍（PSVT）では、**QRS波に重なったり、逆行性P波**がみられたりすることがあります。" },
+            // Q46-Q50: ホルター解析とAI
+            { question: "Q46. ホルター解析において、心電図波形の間隔（R-R間隔）を計測し、その度数分布を表した棒グラフで、リズムの異常や拍の読み落としをチェックする際に利用されるものはどれか？", options: ["タコグラム", "STトレンドグラフ", "ヒストグラム", "QRSパターン分類"], answer: "C", explanation: "**ヒストグラム**は度数分布を表した棒グラフで、R-R間隔を計測し度数として表示します。R-R間隔の短縮や延長を素早く捉えることができます。" },
+            { question: "Q47. ホルター解析のヒストグラムにおいて、体動の影響などで拍として認識できなかった場合、臨床的に正しくない情報として報告される可能性のあるR-R間隔の変化はどれか？", options: ["R-R間隔が極端に短くなる", "R-R間隔が極端に長くなる（拍の読み落としによるRR間隔延長の誤り）", "R-R間隔の変動がなくなる", "R-R間隔比が50%未満になる"], answer: "B", explanation: "体動などで拍と認識できない場合、そのままにしておくと**拍の読み落としによるRR間隔延長の誤り**となり、臨床的に正しくないRR間隔を報告することになります。この場合、ヒストグラムは山のすそ野が右（長い間隔）に伸びる特徴的な形になります。" },
+            { question: "Q48. ホルター解析の編集作業において、心電図波形に「筋電図」が混入する主な原因として挙げられるものはどれか？", options: ["電気あんか・電気毛布の使用", "寝返りや呼吸の影響 (ドリフト)", "電極の接触不良 (交流障害またはドリフト)", "歯磨きや階段の昇り降り"], answer: "D", explanation: "筋電図は、**歯磨きや階段の昇り降り**などの活動によって混入します。" },
+            { question: "Q49. 東京大学などが開発した高精度な心電図AIモデルで、心機能の低下（EF低下）を判別するために採用された最新の自己教師あり学習手法はどれか？", options: ["サポートベクターマシン（SVM）", "マスクドオートエンコーダー（MAE）", "ディープラーニングニューラルネットワーク（DNN）", "ビジョントランスフォーマー（ViT）"], answer: "B", explanation: "本研究では、最新の自己教師あり学習手法である**マスクドオートエンコーダー（MAE）**を採用し、これをViTモデルに事前学習させることで、心機能の低下を高い精度で検出するモデルを開発しました。" },
+            { question: "Q50. マスクドオートエンコーダー（MAE）を用いた心電図AIモデルが多施設データで高精度を実現した成果を評価する指標で、1.0に近いほど高い性能を示すのはどれか？", options: ["QRS時間", "再構築損失（Reconstructive Loss）", "受信者動作特性曲線下面積（AUC）", "RR間隔"], answer: "C", explanation: "モデルの性能評価には**受信者動作特性曲線下面積（AUC）**が用いられており、この指標は0.5から1.0の範囲で表され、1.0に近いほど高い性能を示します。MAEモデルは外部検証コホート全体で0.962という高いAUC値を示しました。" },
+            // Q51-Q55: 応用知識・緊急対応
+            { question: "Q51. 心臓の4つの部屋のうち、全身から血液を受け取り肺に血液を送り出すポンプ系（肺循環のポンプ）を担うのはどれか？", options: ["左心房と左心室（左心系）", "右心房と右心室（右心系）", "心室中隔", "大動脈弁"], answer: "B", explanation: "**右心系**（右心房、右心室）は全身から血液を吸い込んで、肺に送り出すポンプ系（肺循環）です。" },
+            { question: "Q52. 心室の収縮時に心房への血液の逆流を防ぐ役割を持つ、心房と心室の間にある逆流防止弁を何と呼ぶか？", options: ["動脈弁", "房室弁", "肺動脈弁", "大動脈弁"], answer: "B", explanation: "**房室弁**は心房と心室の間（心室の入口）にあり、心室の収縮時に弁が閉じることで心房への逆流を防いでいます。" },
+            { question: "Q53. 房室弁のうち、右心系にあり、3枚の弁からなるものはどれか？", options: ["僧帽弁 (左心系、2枚弁)", "大動脈弁", "肺動脈弁", "三尖弁"], answer: "D", explanation: "右心系は3枚の弁からなる**三尖弁**、左心系は2枚の弁で僧侶の帽子のように見える僧帽弁が房室弁として存在します。" },
+            { question: "Q54. 急性冠症候群（ACS）の患者への初動対応として、血圧が保たれている場合に、除痛目的で用意すべき薬剤はどれか？", options: ["ドブタミン", "アトロピン", "ニトログリセリン類", "ノルアドレナリン"], answer: "C", explanation: "急性冠症候群と判断した場合、バイタルサインチェックやモニター・除細動器の準備に加え、**血圧が保たれていればニトログリセリン類の投与（舌下、スプレー、ときに点滴）**や、除痛のためのモルヒネなども用意します。" },
+            { question: "Q55. ホルター解析装置を用いて小児例のデータを解析する際、誤ってイベントを抽出しないようにするために、特に見直すべき設定項目はどれか？", options: ["解析対象チャネルの選択", "拍ラベルの定義", "心拍停止（Pause）、頻脈、徐脈の検出条件", "報告心電図の登録時間"], answer: "C", explanation: "被検者や症例に合わせて設定を見直すことで、抽出すべきイベントを発見しやすくすることができます。特に**小児例では、心拍停止（Pause）、頻脈、徐脈の検出条件を一般成人とは異なる値に変更する**必要があります。" },
+        ];
+
+        let currentQuestions = [];
+
+        const quizArea = document.getElementById('quiz-area');
+        const resultArea = document.getElementById('result-area');
+        const submitBtn = document.getElementById('submit-btn');
+        const retryBtn = document.getElementById('retry-btn');
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startQuiz() {
+            // Reset areas
+            quizArea.innerHTML = '';
+            resultArea.innerHTML = '';
+            resultArea.classList.add('hidden');
+            quizArea.classList.remove('hidden');
+            submitBtn.classList.remove('hidden');
+            retryBtn.classList.add('hidden');
+            
+            // Select 5 random questions
+            const shuffledData = shuffleArray([...quizData]);
+            currentQuestions = shuffledData.slice(0, 5);
+
+            // Display questions
+            currentQuestions.forEach((q, index) => {
+                const optionLetters = ['A', 'B', 'C', 'D'];
+                const optionsHTML = q.options.map((option, i) => `
+                    <div>
+                        <input type="radio" name="question${index}" id="q${index}o${i}" value="${optionLetters[i]}" class="hidden">
+                        <label for="q${index}o${i}" class="option-label block w-full p-4 rounded-lg cursor-pointer text-left">
+                            <span class="font-bold mr-3 text-amber-400">${optionLetters[i]}.</span>
+                            ${option}
+                        </label>
+                    </div>
+                `).join('');
+
+                const questionHTML = `
+                    <div class="question-card py-6">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-100">${q.question}</h3>
+                        <div class="space-y-3">
+                            ${optionsHTML}
+                        </div>
+                    </div>
+                `;
+                quizArea.innerHTML += questionHTML;
+            });
+        }
+
+        function showResults() {
+            let score = 0;
+            quizArea.classList.add('hidden');
+            resultArea.classList.remove('hidden');
+            submitBtn.classList.add('hidden');
+            retryBtn.classList.remove('hidden');
+
+            resultArea.innerHTML = ''; // Clear previous results
+
+            currentQuestions.forEach((q, index) => {
+                const selectedOptionElement = document.querySelector(`input[name="question${index}"]:checked`);
+                const userAnswer = selectedOptionElement ? selectedOptionElement.value : null;
+                const isCorrect = userAnswer === q.answer;
+
+                if (isCorrect) {
+                    score++;
+                }
+
+                const optionLetters = ['A', 'B', 'C', 'D'];
+                const optionsHTML = q.options.map((option, i) => {
+                    const letter = optionLetters[i];
+                    let resultClass = '';
+                    if (letter === q.answer) {
+                        resultClass = 'correct-answer';
+                    } else if (letter === userAnswer && !isCorrect) {
+                        resultClass = 'incorrect-answer';
+                    }
+
+                    return `
+                        <div class="option-label block w-full p-4 rounded-lg ${resultClass}">
+                            <span class="font-bold mr-3 ${letter === q.answer ? 'text-emerald-400' : (letter === userAnswer ? 'text-red-400' : 'text-amber-400')}">${letter}.</span>
+                            ${option}
+                        </div>
+                    `;
+                }).join('');
+
+                const resultHTML = `
+                    <div class="question-card py-6">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-100">${q.question}</h3>
+                        <div class="space-y-3 mb-4">
+                            ${optionsHTML}
+                        </div>
+                        <div class="explanation mt-6 p-4 rounded-lg">
+                            <h4 class="font-bold text-amber-500 mb-2">解説</h4>
+                            <p class="text-gray-300">${q.explanation.replace(/\*\*(.*?)\*\*/g, '<strong class="text-amber-400">$1</strong>')}</p>
+                        </div>
+                    </div>
+                `;
+                resultArea.innerHTML += resultHTML;
+            });
+            
+            // Add score summary at the top
+            const scoreSummary = `
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold result-header pb-2 inline-block">結果</h2>
+                    <p class="text-5xl font-bold my-4">${score} <span class="text-2xl text-gray-400">/ 5</span></p>
+                    <p class="text-xl">${score >= 4 ? '素晴らしい成績です！' : (score >= 2 ? 'あと少しです！' : 'もう一度挑戦しましょう！')}</p>
+                </div>
+            `;
+            resultArea.insertAdjacentHTML('afterbegin', scoreSummary);
+        }
+
+        submitBtn.addEventListener('click', showResults);
+        retryBtn.addEventListener('click', startQuiz);
+
+        // Initial load
+        startQuiz();
+    </script>
+
+</body>
+</html>
+
 
