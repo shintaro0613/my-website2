@@ -157,6 +157,46 @@ lesson1/index.html
             cursor: not-allowed;
         }
 
+        /* ================================================= */
+        /* ★★★ モバイル端末向けの調整 (画面幅が650px以下の場合に適用) ★★★ */
+        /* ================================================= */
+        @media screen and (max-width: 650px) {
+            /* 1. body のパディングを削除し、縦スクロールを優先 */
+            body {
+                padding: 0;
+                align-items: flex-start;
+            }
+            
+            /* 2. メインコンテナの角丸と影を削除し、全画面表示に近づける */
+            #quiz-container {
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            /* 3. ヘッダー、ボディ、ボタンコンテナのパディングをモバイル向けに調整 */
+            #quiz-header, #quiz-body, .button-container, #result-area {
+                padding: 20px;
+            }
+
+            /* 4. タイトルのフォントサイズを調整 */
+            #quiz-header h1 {
+                font-size: 24px;
+            }
+
+            /* 5. 質問文と選択肢のフォントサイズを調整 */
+            .question-title {
+                font-size: 16px;
+            }
+            .options label {
+                padding: 12px 15px; /* 選択肢のパディングを調整 */
+            }
+
+            /* 6. ボタンのサイズを調整 */
+            button {
+                padding: 12px 25px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -304,7 +344,7 @@ lesson1/index.html
         }
 
         submitBtn.addEventListener('click', () => {
-             // すべての問題に回答したかチェック
+            // すべての問題に回答したかチェック
             const answeredCount = currentQuestions.filter((q, index) => 
                 document.querySelector(`input[name="question${index}"]:checked`)
             ).length;
@@ -323,4 +363,3 @@ lesson1/index.html
     </script>
 </body>
 </html>
-<meta name="viewport" content="width=device-width, initial-scale=1">
