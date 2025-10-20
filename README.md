@@ -90,12 +90,12 @@
     <!-- 各Lesson -->
     <div class="card">
       <div class="lesson-title">Lesson 1</div>
-      <div class="lesson-desc">火災現場の安全管理</div>
+      <div class="lesson-desc">火災現場活動基礎知識</div>
       <a href="lesson1/index.html" class="button">▶ 学習する</a>
     </div>
     <div class="card">
       <div class="lesson-title">Lesson 2</div>
-      <div class="lesson-desc">救助活動の基本</div>
+      <div class="lesson-desc">放射性物質事故対応</div>
       <a href="lesson2/index.html" class="button">▶ 学習する</a>
     </div>
     <div class="card">
